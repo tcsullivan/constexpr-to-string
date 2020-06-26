@@ -23,7 +23,7 @@ struct to_string_t {
     // fits to the number perfectly.
     char buf[([] {
                   unsigned int len = N >= 0 ? 1 : 2;
-                  for (auto n = N < 0 ? -N : N; n; len++, n /= base);
+                  for (auto n = N; n; len++, n /= base);
                   return len;
              }())];
 
@@ -33,8 +33,8 @@ struct to_string_t {
     constexpr to_string_t() {
         auto ptr = buf + sizeof(buf) / sizeof(buf[0]);
         *--ptr = '\0';
-        for (auto n = N < 0 ? -N : N; n; n /= base)
-            *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n % base];
+        for (auto n = N; n; n /= base)
+            *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(N < 0 ? -1 : 1) * (n % base)];
         if (N < 0)
             *--ptr = '-';
     }
