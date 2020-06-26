@@ -13,9 +13,11 @@
  * @struct to_string_t
  * @brief Provides the ability to convert any integral to a string at compile-time.
  * @tparam N Number to convert
- * @tparam base Desired base, can be from 2 to 16 (though no checking is done)
+ * @tparam base Desired base, can be from 2 to 36
  */
-template<auto N, unsigned int base = 10, std::enable_if_t<std::is_integral_v<decltype(N)>, int> = 0>
+template<auto N, unsigned int base,
+    std::enable_if_t<std::is_integral_v<decltype(N)>, int> = 0,
+    std::enable_if_t<(base > 1 && base < 37), int> = 0>
 struct to_string_t {
     // The lambda calculates what the string length of N will be, so that `buf`
     // fits to the number perfectly.
@@ -29,13 +31,10 @@ struct to_string_t {
      * Constructs the object, filling `buf` with the string representation of N.
      */
     constexpr to_string_t() {
-        unsigned int len = N >= 0 ? 1 : 2;
-        for (auto n = N < 0 ? -N : N; n; len++, n /= base);
-
-        auto ptr = buf + len;
+        auto ptr = buf + sizeof(buf) / sizeof(buf[0]);
         *--ptr = '\0';
         for (auto n = N < 0 ? -N : N; n; n /= base)
-            *--ptr = "0123456789ABCDEF"[n % base];
+            *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n % base];
         if (N < 0)
             *--ptr = '-';
     }
