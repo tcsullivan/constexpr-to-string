@@ -27,21 +27,25 @@ Try it [on Compiler Explorer](https://godbolt.org/z/T-MFoh).
 The basic structure of `to_string` is shown below:
 
 ```cpp
-template<auto N, unsigned int base, /* N type-check and base bounds-check */>
+template<auto N, unsigned int base, typename char_type, /* N type-check and base bounds-check */>
 struct to_string_t {
-    char buf[];                          // Size selection explained later.
-    constexpr to_string_t() {}           // Converts the integer to a string stored in buf.
-    constexpr operator char *() {}       // These allow for the object to be implicitly converted
-    constexpr operator const char *() {} // to a character pointer.
+    char_type buf[];                          // Size selection explained later.
+    constexpr to_string_t() {}                // Converts the integer to a string stored in buf.
+    constexpr operator char_type *() {}       // These allow for the object to be implicitly converted
+    constexpr operator const char_type *() {} // to a character pointer.
+    
+    // begin() and end() are supported too.
 };
 
-template<auto N, unsigned int base = 10>
-to_string_t<N, base> to_string;          // Simplifies usage: to_string_t<N, base>() becomes to_string<N, base>.
+template<auto N, unsigned int base = 10, typename char_type = char>
+constexpr to_string_t<N, base, char_type> to_string;    // Simplifies usage, e.g. to_string_t<367>() becomes to_string<367>.
 ```
 
 Since the number and base are template parameters, each differing `to_string` use will get its own character buffer.
 
 The integer/string conversion is done using a simple method I learned over the years, where the string is built in reverse using `n % base` to calculate the value of the lowest digit:
+
+(*Note: The below examples of code are not up-to-date, though they still give a general idea of how `to_string` works.*)
 
 ```cpp
 constexpr to_string_t() {
