@@ -43,19 +43,15 @@ struct to_string_t {
         }
     }
 
-    /**
-     * Allows implicit conversion of this object to a `char *`.
-     */
-    constexpr operator char_type *() {
-        return buf;
-    }
+    // Support implicit casting to `char *` or `const char *`.
+    constexpr operator char_type *() { return buf; }
+    constexpr operator const char_type *() const { return buf; }
     
-    /**
-     * Allows implicit conversion of this object to a `const char *`.
-     */
-    constexpr operator const char_type *() const {
-        return buf;
-    }
+    // Support range-based for loops
+    constexpr auto begin() { return buf; }
+    constexpr auto begin() const { return buf; }
+    constexpr auto end() { return buf + sizeof(buf) / sizeof(buf[0]); }
+    constexpr auto end() const { return buf + sizeof(buf) / sizeof(buf[0]); }
 };
 
 /**
