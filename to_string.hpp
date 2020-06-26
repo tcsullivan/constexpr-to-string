@@ -25,12 +25,12 @@ struct to_string_t {
                   unsigned int len = N >= 0 ? 1 : 2;
                   for (auto n = N < 0 ? -N : N; n; len++, n /= base);
                   return len;
-             }())];
+             }())] = {};
 
     /**
      * Constructs the object, filling `buf` with the string representation of N.
      */
-    constexpr to_string_t() {
+    constexpr to_string_t() noexcept {
         auto ptr = buf + sizeof(buf) / sizeof(buf[0]);
         *--ptr = '\0';
         for (auto n = N < 0 ? -N : N; n; n /= base)
@@ -58,6 +58,6 @@ struct to_string_t {
  * Simplifies use of `to_string_t` from `to_string_t<N>()` to `to_string<N>`.
  */
 template<auto N, unsigned int base = 10>
-to_string_t<N, base> to_string;
+constexpr to_string_t<N, base> to_string;
  
 #endif // TCSULLIVAN_TO_STRING_HPP_
