@@ -5,6 +5,7 @@
 * Convert any integral type to a string at compile-time
 * Supports converting to any base between 2 and 36 inclusive
 * No external dependencies, only includes `type_traits` for template parameter checking
+* Supports custom character types, e.g. `to_string<123, 10, wchar_t>`
 
 **How to use:**
 
