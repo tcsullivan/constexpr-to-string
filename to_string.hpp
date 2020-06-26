@@ -9,6 +9,9 @@
 
 #include <type_traits>
 
+constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+constexpr auto digit_count = sizeof(digits) / sizeof(digits[0]);
+
 /**
  * @struct to_string_t
  * @brief Provides the ability to convert any integral to a string at compile-time.
@@ -17,7 +20,7 @@
  */
 template<auto N, unsigned int base, typename char_type,
     std::enable_if_t<std::is_integral_v<decltype(N)>, int> = 0,
-    std::enable_if_t<(base > 1 && base < 37), int> = 0>
+    std::enable_if_t<(base > 1 && base < digit_count), int> = 0>
 struct to_string_t {
     // The lambda calculates what the string length of N will be, so that `buf`
     // fits to the number perfectly.
@@ -35,7 +38,7 @@ struct to_string_t {
             auto ptr = buf + sizeof(buf) / sizeof(buf[0]);
             *--ptr = '\0';
             for (auto n = N < 0 ? -N : N; n; n /= base)
-                *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n % base];
+                *--ptr = digits[n % base];
             if (N < 0)
                 *--ptr = '-';
         } else {
