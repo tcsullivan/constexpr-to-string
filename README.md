@@ -3,8 +3,8 @@
 **Features:**
 
 * Convert any integral type to a string at compile-time
-* String can be in binary, hexadecimal, or any base in-between
-* No external dependencies, only includes `type_traits` for type-checking
+* Supports converting to any base between 2 and 36 inclusive
+* No external dependencies, only includes `type_traits` for template parameter checking
 * Works best in C++20 GCC or C++17/20 Clang
 
 **How to use:**
