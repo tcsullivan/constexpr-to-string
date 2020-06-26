@@ -20,6 +20,8 @@ puts(to_string<30, 2>); // produces "11110"
 
 With `to_string`, all that will be found in program disassembly are the resulting string literals, as if you wrote the strings yourself.
 
+Try it [on Compiler Explorer](https://godbolt.org/z/T-MFoh).
+
 **Known issues:**
 
 * With C++17 GCC, `to_string` must be used to initialize variables; otherwise, the integer-string conversion is done at run-time.
