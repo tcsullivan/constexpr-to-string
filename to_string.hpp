@@ -22,7 +22,7 @@ struct to_string_t {
     // The lambda calculates what the string length of N will be, so that `buf`
     // fits to the number perfectly.
     char buf[([] {
-                  unsigned int len = N >= 0 ? 1 : 2;
+                  unsigned int len = N > 0 ? 1 : 2;
                   for (auto n = N < 0 ? -N : N; n; len++, n /= base);
                   return len;
              }())] = {};
@@ -31,12 +31,16 @@ struct to_string_t {
      * Constructs the object, filling `buf` with the string representation of N.
      */
     constexpr to_string_t() noexcept {
-        auto ptr = buf + sizeof(buf) / sizeof(buf[0]);
-        *--ptr = '\0';
-        for (auto n = N < 0 ? -N : N; n; n /= base)
-            *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n % base];
-        if (N < 0)
-            *--ptr = '-';
+        if (N != 0) {
+            auto ptr = buf + sizeof(buf) / sizeof(buf[0]);
+            *--ptr = '\0';
+            for (auto n = N < 0 ? -N : N; n; n /= base)
+                *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n % base];
+            if (N < 0)
+                *--ptr = '-';
+        } else {
+            buf[0] = '0';
+        }
     }
 
     /**
