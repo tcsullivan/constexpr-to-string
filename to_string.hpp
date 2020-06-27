@@ -68,7 +68,7 @@ class to_string_t {
 /**
  * Simplifies use of `to_string_t` from `to_string_t<N>()` to `to_string<N>`.
  */
-template<auto N, unsigned int base = 10, typename char_type = char>
+template<auto N, int base = 10, typename char_type = char>
 constexpr to_string_t<N, base, char_type> to_string;
 
 #endif // TCSULLIVAN_TO_STRING_HPP_
