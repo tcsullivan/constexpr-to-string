@@ -15,7 +15,7 @@
  * @tparam N Number to convert
  * @tparam base Desired base, can be from 2 to 36
  */
-template<auto N, unsigned int base, typename char_type,
+template<auto N, int base, typename char_type,
     std::enable_if_t<std::is_integral_v<decltype(N)>, int> = 0,
     std::enable_if_t<(base > 1 && base < 37), int> = 0>
 class to_string_t {
@@ -35,7 +35,7 @@ class to_string_t {
         auto ptr = end();
         *--ptr = '\0';
         if (N != 0) {
-            for (auto n = N < 0 ? -N : N; n; n /= base)
+            for (auto n = N; n; n /= base)
                 *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(N < 0 ? -1 : 1) * (n % base)];
             if (N < 0)
                 *--ptr = '-';
