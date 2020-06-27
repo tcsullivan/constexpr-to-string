@@ -51,18 +51,18 @@ class to_string_t {
     constexpr auto size() const noexcept { return sizeof(buf) / sizeof(buf[0]); }
     // Element access
     constexpr auto data() noexcept { return buf; }
-    constexpr auto data() const noexcept { return buf; }
-    constexpr auto operator[](unsigned int i) noexcept { return buf[i]; }
-    constexpr auto operator[](unsigned int i) const noexcept { return buf[i]; }
-    constexpr auto front() noexcept { return buf[0]; }
-    constexpr auto front() const noexcept { return buf[0]; }
-    constexpr auto back() noexcept { return buf[size() - 1]; }
-    constexpr auto back() const noexcept { return buf[size() - 1]; }
+    constexpr const auto data() const noexcept { return buf; }
+    constexpr auto& operator[](unsigned int i) noexcept { return buf[i]; }
+    constexpr const auto& operator[](unsigned int i) const noexcept { return buf[i]; }
+    constexpr auto& front() noexcept { return buf[0]; }
+    constexpr const auto& front() const noexcept { return buf[0]; }
+    constexpr auto& back() noexcept { return buf[size() - 1]; }
+    constexpr const auto& back() const noexcept { return buf[size() - 1]; }
     // Iterators
     constexpr auto begin() noexcept { return buf; }
-    constexpr auto begin() const noexcept { return buf; }
+    constexpr const auto begin() const noexcept { return buf; }
     constexpr auto end() noexcept { return buf + size(); }
-    constexpr auto end() const noexcept { return buf + size(); }
+    constexpr const auto end() const noexcept { return buf + size(); }
 };
 
 /**
