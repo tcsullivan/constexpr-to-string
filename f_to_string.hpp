@@ -44,7 +44,7 @@ class f_to_string_t {
         auto append = [](auto V, auto& ptr) {
             if (V != 0) {
                 for (auto n = V; n; n /= 10)
-                    *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(V < 0 ? -1 : 1) * (n % 10)];
+                    *--ptr = (V < 0 ? -1 : 1) * (n % 10) + '0';
             } else {
                 *--ptr = '0';
             }
