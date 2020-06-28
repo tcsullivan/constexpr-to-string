@@ -25,7 +25,7 @@ Try it [on Compiler Explorer](https://godbolt.org/z/T-MFoh).
 
 `f_to_string.hpp`, requiring C++20, provides an `f_to_string` utility for floating-point conversion:
 
-```
+```cpp
 puts(f_to_string<3.1415926>); // Defaults to 5-point precision: "3.14159"
 puts(f_to_string<{3.1415926, 7}>); // Specify precision: "3.1415926"
 ```
