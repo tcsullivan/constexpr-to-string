@@ -11,8 +11,7 @@
 
 namespace constexpr_to_string {
 
-constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-constexpr auto digit_count = sizeof(digits) / sizeof(digits[0]);
+inline constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 /**
  * @struct to_string_t
@@ -22,7 +21,7 @@ constexpr auto digit_count = sizeof(digits) / sizeof(digits[0]);
  */
 template<auto N, int base, typename char_type,
     std::enable_if_t<std::is_integral_v<decltype(N)>, int> = 0,
-    std::enable_if_t<(base > 1 && base < digit_count), int> = 0>
+    std::enable_if_t<(base > 1 && base < sizeof(digits)), int> = 0>
 class to_string_t {
     // The lambda calculates what the string length of N will be, so that `buf`
     // fits to the number perfectly.
