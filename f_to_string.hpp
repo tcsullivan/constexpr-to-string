@@ -7,11 +7,13 @@
 #ifndef TCSULLIVAN_F_TO_STRING_HPP_
 #define TCSULLIVAN_F_TO_STRING_HPP_
 
-struct f_to_string_double_wrapper {
+namespace constexpr_to_string {
+
+struct double_wrapper {
     long long int whole = 0;
     long long int frac = 0;
 
-    constexpr f_to_string_double_wrapper(double v, int prec = 5) {
+    constexpr double_wrapper(double v, int prec = 5) {
         whole = static_cast<long long int>(v);
         v -= whole;
         for (int i = 0; i < prec; i++)
@@ -25,7 +27,7 @@ struct f_to_string_double_wrapper {
  * @brief Provides the ability to convert a floating-point number to a string at compile-time.
  * @tparam N Number to convert
  */
-template<f_to_string_double_wrapper N, typename char_type>
+template<double_wrapper N, typename char_type>
 class f_to_string_t {
     char_type buf[([]() constexpr noexcept {
                        unsigned int len = 2;
@@ -80,11 +82,12 @@ class f_to_string_t {
     constexpr const auto end() const noexcept { return buf + size(); }
 };
 
+} // namespace constexpr_to_string
+
 /**
  * Simplifies use of `f_to_string_t` from `f_to_string_t<N>()` to `f_to_string<N>`.
  */
-template<f_to_string_double_wrapper N, typename char_type = char>
-constexpr f_to_string_t<N, char_type> f_to_string;
+template<constexpr_to_string::double_wrapper N, typename char_type = char>
+constexpr constexpr_to_string::f_to_string_t<N, char_type> f_to_string;
 
 #endif // TCSULLIVAN_F_TO_STRING_HPP_
-
