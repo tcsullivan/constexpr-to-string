@@ -9,6 +9,8 @@
 
 #include <type_traits>
 
+namespace constexpr_to_string {
+
 constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 constexpr auto digit_count = sizeof(digits) / sizeof(digits[0]);
 
@@ -68,10 +70,12 @@ class to_string_t {
     constexpr const auto end() const noexcept { return buf + size(); }
 };
 
+} // namespace constexpr_to_string
+
 /**
  * Simplifies use of `to_string_t` from `to_string_t<N>()` to `to_string<N>`.
  */
 template<auto N, int base = 10, typename char_type = char>
-constexpr to_string_t<N, base, char_type> to_string;
+constexpr constexpr_to_string::to_string_t<N, base, char_type> to_string;
 
 #endif // TCSULLIVAN_TO_STRING_HPP_
