@@ -56,11 +56,13 @@ The integer/string conversion is done using a simple method I learned over the y
 (*Note: The below examples of code are not up-to-date, though they still give a general idea of how `to_string` works.*)
 
 ```cpp
+constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 constexpr to_string_t() {
     auto ptr = buf + sizeof(buf) / sizeof(buf[0]);
     *--ptr = '\0';
     for (auto n = N < 0 ? -N : N; n; n /= base)
-        *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n % base];
+        *--ptr = digits[n % base];
     if (N < 0)
         *--ptr = '-';
 }

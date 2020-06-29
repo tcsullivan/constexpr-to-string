@@ -9,6 +9,11 @@
 
 #include <type_traits>
 
+namespace constexpr_to_string {
+
+constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+constexpr auto digit_count = sizeof(digits) / sizeof(digits[0]);
+
 /**
  * @struct to_string_t
  * @brief Provides the ability to convert any integral to a string at compile-time.
@@ -17,7 +22,7 @@
  */
 template<auto N, int base, typename char_type,
     std::enable_if_t<std::is_integral_v<decltype(N)>, int> = 0,
-    std::enable_if_t<(base > 1 && base < 37), int> = 0>
+    std::enable_if_t<(base > 1 && base < digit_count), int> = 0>
 class to_string_t {
     // The lambda calculates what the string length of N will be, so that `buf`
     // fits to the number perfectly.
@@ -36,7 +41,7 @@ class to_string_t {
         *--ptr = '\0';
         if (N != 0) {
             for (auto n = N; n; n /= base)
-                *--ptr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(N < 0 ? -1 : 1) * (n % base)];
+                *--ptr = digits[(N < 0 ? -1 : 1) * (n % base)];
             if (N < 0)
                 *--ptr = '-';
         } else {
@@ -65,10 +70,12 @@ class to_string_t {
     constexpr const auto end() const noexcept { return buf + size(); }
 };
 
+} // namespace constexpr_to_string
+
 /**
  * Simplifies use of `to_string_t` from `to_string_t<N>()` to `to_string<N>`.
  */
 template<auto N, int base = 10, typename char_type = char>
-constexpr to_string_t<N, base, char_type> to_string;
+constexpr constexpr_to_string::to_string_t<N, base, char_type> to_string;
 
 #endif // TCSULLIVAN_TO_STRING_HPP_
