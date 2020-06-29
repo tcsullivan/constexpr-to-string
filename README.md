@@ -6,10 +6,11 @@
 * Supports converting to any base between 2 and 36 inclusive
 * No external dependencies, only includes `type_traits` for template parameter checking
 * Supports custom character types, e.g. `to_string<123, 10, wchar_t>`
+* C++20: Supports floating-point-to-string conversion with `f_to_string`
 
 **How to use:**
 
-This single header file provides a `to_string` utility, which may be used as below:
+The file `to_string.hpp` provides a `to_string` utility, which may be used as below:
 
 ```cpp
 const char *number = to_string<2147483648999954564, 16>; // produces "1DCD65003B9A1884"
@@ -22,6 +23,13 @@ With `to_string`, all that will be found in program disassembly are the resultin
 
 Try it [on Compiler Explorer](https://godbolt.org/z/T-MFoh).
 
+`f_to_string.hpp`, requiring C++20, provides an `f_to_string` utility for floating-point conversion:
+
+```cpp
+puts(f_to_string<3.1415926>); // Defaults to 5-point precision: "3.14159"
+puts(f_to_string<{3.1415926, 7}>); // Specify precision: "3.1415926"
+```
+
 # How it works
 
 The basic structure of `to_string` is shown below:
@@ -29,7 +37,7 @@ The basic structure of `to_string` is shown below:
 ```cpp
 template<auto N, unsigned int base, typename char_type, /* N type-check and base bounds-check */>
 struct to_string_t {
-    char_type buf[];                          // Size selection explained later.
+    char_type buf[];                          // Array size determination explained later.
     constexpr to_string_t() {}                // Converts the integer to a string stored in buf.
     constexpr operator char_type *() {}       // These allow for the object to be implicitly converted
     constexpr operator const char_type *() {} // to a character pointer.
