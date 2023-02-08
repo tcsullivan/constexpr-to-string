@@ -7,11 +7,12 @@
 #ifndef TCSULLIVAN_TO_STRING_HPP_
 #define TCSULLIVAN_TO_STRING_HPP_
 
+#include <cstdint>
 #include <type_traits>
 
 namespace constexpr_to_string {
 
-inline constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 /**
  * @struct to_string_t
@@ -19,17 +20,17 @@ inline constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
  * @tparam N Number to convert
  * @tparam base Desired base, can be from 2 to 36
  */
-template<auto N, int base, typename char_type,
-    std::enable_if_t<std::is_integral_v<decltype(N)>, int> = 0,
+template<std::intmax_t N, int base, typename char_type,
     std::enable_if_t<(base > 1 && base < sizeof(digits)), int> = 0>
 class to_string_t {
-    // The lambda calculates what the string length of N will be, so that `buf`
-    // fits to the number perfectly.
-    char_type buf[([]() constexpr noexcept {
-                       unsigned int len = N > 0 ? 1 : 2;
-                       for (auto n = N; n; len++, n /= base);
-                       return len;
-                   }())] = {};
+
+    constexpr static auto buflen() noexcept {
+        unsigned int len = N > 0 ? 1 : 2;
+        for (auto n = N; n; len++, n /= base);
+        return len;
+    }
+
+    char_type buf[buflen()] = {};
 
  public:
     /**
@@ -38,6 +39,7 @@ class to_string_t {
     constexpr to_string_t() noexcept {
         auto ptr = end();
         *--ptr = '\0';
+
         if (N != 0) {
             for (auto n = N; n; n /= base)
                 *--ptr = digits[(N < 0 ? -1 : 1) * (n % base)];
@@ -53,6 +55,7 @@ class to_string_t {
     constexpr operator const char_type *() const noexcept { return buf; }
 
     constexpr auto size() const noexcept { return sizeof(buf) / sizeof(buf[0]); }
+
     // Element access
     constexpr auto data() noexcept { return buf; }
     constexpr const auto data() const noexcept { return buf; }
@@ -62,6 +65,7 @@ class to_string_t {
     constexpr const auto& front() const noexcept { return buf[0]; }
     constexpr auto& back() noexcept { return buf[size() - 1]; }
     constexpr const auto& back() const noexcept { return buf[size() - 1]; }
+
     // Iterators
     constexpr auto begin() noexcept { return buf; }
     constexpr const auto begin() const noexcept { return buf; }
@@ -74,7 +78,8 @@ class to_string_t {
 /**
  * Simplifies use of `to_string_t` from `to_string_t<N>()` to `to_string<N>`.
  */
-template<auto N, int base = 10, typename char_type = char>
+template<std::intmax_t N, int base = 10, typename char_type = char>
 constexpr constexpr_to_string::to_string_t<N, base, char_type> to_string;
 
 #endif // TCSULLIVAN_TO_STRING_HPP_
+

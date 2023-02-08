@@ -1,10 +1,12 @@
 # constexpr-to-string
 
+Requires C++14 or later.
+
 **Features:**
 
 * Convert any integral type to a string at compile-time
-* Supports converting to any base between 2 and 36 inclusive
-* No external dependencies, only includes `type_traits` for template parameter checking
+* Supports converting to bases 2 through 36
+* No external dependencies
 * Supports custom character types, e.g. `to_string<123, 10, wchar_t>`
 * C++20: Supports floating-point-to-string conversion with `f_to_string`
 
@@ -32,48 +34,11 @@ puts(f_to_string<{3.1415926, 7}>); // Specify precision: "3.1415926"
 
 # How it works
 
-The basic structure of `to_string` is shown below:
+C++14 greatly expanded the capabilities of compile-time code execution through `constexpr`. In particular, it allows for non-trivial constructors to be `constexpr`.
 
-```cpp
-template<auto N, unsigned int base, typename char_type, /* N type-check and base bounds-check */>
-struct to_string_t {
-    char_type buf[];                          // Array size determination explained later.
-    constexpr to_string_t() {}                // Converts the integer to a string stored in buf.
-    constexpr operator char_type *() {}       // These allow for the object to be implicitly converted
-    constexpr operator const char_type *() {} // to a character pointer.
-    
-    // begin() and end() are supported too.
-};
+`to_string` takes advantage of this by providing an object that converts a template-parameter integer to a string using a basic `itoa` implementation in the constructor. Through an additional `constexpr` member function, we can calculate the length of the resulting string; this can be used to size the object's string buffer for a perfect fit.
 
-template<auto N, unsigned int base = 10, typename char_type = char>
-constexpr to_string_t<N, base, char_type> to_string;    // Simplifies usage, e.g. to_string_t<367>() becomes to_string<367>.
-```
+Beyond this, `to_string` simply provides familiar member functions that allow for iteration and data access. The expansion of the capabilities of `auto` in C++14 help make these definitions concise.
 
-Since the number and base are template parameters, each differing `to_string` use will get its own character buffer.
+The floating-point implementation `f_to_string` takes a similar approach, but requires C++20 as it needs a `double_wrapper` object to capture the `double` value. `double` and `float` cannot directly be template parameters as of C++20, and a non-type template parameter like the `double_wrapper` structure was not allowed before C++20.
 
-The integer/string conversion is done using a simple method I learned over the years, where the string is built in reverse using `n % base` to calculate the value of the lowest digit:
-
-(*Note: The below examples of code are not up-to-date, though they still give a general idea of how `to_string` works.*)
-
-```cpp
-constexpr char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-constexpr to_string_t() {
-    auto ptr = buf + sizeof(buf) / sizeof(buf[0]);
-    *--ptr = '\0';
-    for (auto n = N < 0 ? -N : N; n; n /= base)
-        *--ptr = digits[n % base];
-    if (N < 0)
-        *--ptr = '-';
-}
-```
-
-As you may have noticed, `buf` needs to be given a size for all this to work; in fact, the above code relies on the buffer having a size equal to the generated string (or else `buf[0]` would still be uninitialized). This is actually the case: a lambda is used within `buf`'s declaration to count how many characters long the string will ultimately be. This counting is done in a manner similar to conversion loop shown above:
-
-```cpp
-char buf[([] {
-              unsigned int len = N >= 0 ? 1 : 2; // Need one byte for '\0', two if there'll be a minus
-              for (auto n = N < 0 ? -N : N; n; len++, n /= base);
-              return len;
-          }())];
-```
