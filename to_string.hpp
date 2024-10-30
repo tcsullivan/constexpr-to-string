@@ -58,7 +58,7 @@ class to_string_t {
 
     // Element access
     constexpr auto data() noexcept { return buf; }
-    constexpr const auto data() const noexcept { return buf; }
+    constexpr auto data() const noexcept { return buf; }
     constexpr auto& operator[](unsigned int i) noexcept { return buf[i]; }
     constexpr const auto& operator[](unsigned int i) const noexcept { return buf[i]; }
     constexpr auto& front() noexcept { return buf[0]; }
@@ -68,9 +68,9 @@ class to_string_t {
 
     // Iterators
     constexpr auto begin() noexcept { return buf; }
-    constexpr const auto begin() const noexcept { return buf; }
+    constexpr auto begin() const noexcept { return buf; }
     constexpr auto end() noexcept { return buf + size(); }
-    constexpr const auto end() const noexcept { return buf + size(); }
+    constexpr auto end() const noexcept { return buf + size(); }
 };
 
 } // namespace constexpr_to_string
